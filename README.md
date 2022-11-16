@@ -6,6 +6,7 @@ Clone this repo and run commands in the order below:
 
 ```
 composer install
+yarn install
 cp .env.example .env # And edit the values
 php artisan key:generate
 ```
@@ -22,6 +23,14 @@ Run the migrations
 
 ```
 sail artisan migrate --seed
+```
+
+### Front-end assets
+
+Open another terminal tab and run the command below to compile front-end assets:
+
+```bash
+yarn run dev
 ```
 
 ### Stripe Webhooks

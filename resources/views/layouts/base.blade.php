@@ -14,9 +14,7 @@
         @endif{{ config('app.name') }}
     </title>
 
-    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
-
-    <script src="{{ mix('/js/app.js') }}" async defer></script>
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
 
     @stack('extra_head')
 </head>
