@@ -44,4 +44,16 @@ class Account extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    /**
+     * Get the first role that ends with "-plan".
+     * (Users cannot subscribe to muliple plan roles)
+     */
+    public function getCurrentPlan()
+    {
+        return $this->roles
+            ->pluck('name')
+            ->first(fn ($role) => str_ends_with($role, '-plan'));
+    }
 }
