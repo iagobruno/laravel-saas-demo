@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Account;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
+use Stripe\Stripe;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+        Cashier::useCustomerModel(Account::class);
     }
 }
