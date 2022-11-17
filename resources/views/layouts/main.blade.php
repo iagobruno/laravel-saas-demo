@@ -3,13 +3,13 @@
 @section('body')
     {{-- @include('layouts.partials.top-banner') --}}
 
-    {{-- @if ($show_header ?? true)
+    @if ($show_header ?? true)
         @include('layouts.partials.header')
-    @endif --}}
+    @endif
 
     {{-- @include('layouts.partials.flash-messages') --}}
 
-    <main class="container pb-5">
+    <main class="mx-auto max-w-7xl px-4 pb-5">
         @yield('content')
     </main>
 @endsection
