@@ -5,6 +5,10 @@
         <div class="flex items-center gap-3">
             @auth
                 {{ Auth::user()->email }}
+                <form action="{{ route('logout') }}" method="post">
+                    @csrf
+                    <button type="submit" class="rounded bg-neutral-500/80 px-2 py-0.5 text-sm text-white">Sair</button>
+                </form>
             @else
                 @if (!Route::is('landing'))
                     <a href="{{ route('landing') }}" class="rounded-md bg-blue-500 px-3 py-1 text-white">Entrar</a>

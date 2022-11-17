@@ -20,3 +20,4 @@ Route::view('/', 'landing')->name('landing');
  * Auth routes
  */
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest')->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');

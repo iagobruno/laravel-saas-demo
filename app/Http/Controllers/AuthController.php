@@ -23,4 +23,13 @@ class AuthController extends Controller
 
         return redirect()->intended(route('dashboard'));
     }
+
+    public function logout()
+    {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect('/');
+    }
 }
