@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
+use function Illuminate\Events\queueable;
 
 class Account extends Authenticatable
 {
@@ -55,5 +56,15 @@ class Account extends Authenticatable
         return $this->roles
             ->pluck('name')
             ->first(fn ($role) => str_ends_with($role, '-plan'));
+    }
+
+
+    protected static function booted()
+    {
+        static::updated(queueable(function ($customer) {
+            if ($customer->hasStripeId()) {
+                $customer->syncStripeCustomerDetails();
+            }
+        }));
     }
 }

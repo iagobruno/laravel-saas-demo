@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Cashier\Events\WebhookReceived as WebhookData;
 use Laravel\Cashier\Cashier;
 
@@ -19,57 +20,67 @@ class StripeWebhookReceived
     {
         $type = $event->payload['type'];
         $payload = $event->payload['data']['object'];
-        // $account = Cashier::findBillable($payload['customer']);
 
         if ($type === 'customer.subscription.created') {
-            $this->subscriptionCreated($payload);
+            $this->subscriptionCreated($payload, $event->payload);
         } //
         else if ($type === 'customer.subscription.updated') {
-            $this->subscriptionUpdated($payload);
+            $this->subscriptionUpdated($payload, $event->payload);
         } //
         else if ($type === 'customer.subscription.deleted') {
-            $this->subscriptionCanceled($payload);
+            $this->subscriptionCanceled($payload, $event->payload);
+        } //
+        else if ($type === 'product.updated') {
+            $this->productUpdatedOnStripe($payload, $event->payload);
         }
     }
 
-    public function subscriptionCreated($payload)
+    public function subscriptionCreated($data)
     {
         /** @var \App\Models\Account */
-        $account = Cashier::findBillable($payload['customer']);
-        $planName = getPlanNameFromProductId($payload['plan']['product']);
+        $account = Cashier::findBillable($data['customer']);
+        $planName = getPlanNameFromProductId($data['plan']['product']);
 
         $account->assignRole($planName);
     }
 
-    public function subscriptionUpdated($payload)
+    public function subscriptionUpdated($data, $payload)
     {
+        // info('payload' . json_encode($payload, JSON_PRETTY_PRINT));
+
         /** @var \App\Models\Account */
-        $account = Cashier::findBillable($payload['customer']);
-        $planName = getPlanNameFromProductId($payload['plan']['product']);
+        $account = Cashier::findBillable($data['customer']);
+        $planName = getPlanNameFromProductId($data['plan']['product']);
 
-        if ($payload['status'] === 'unpaid') {
-            return $account->removeRole($planName);
-        }
-        if ($payload['status'] === 'active') {
-            return $account->assignRole($planName);
+        $subscriptionStatusChanged = array_key_exists('status', $payload['data']['previous_attributes']);
+        if ($subscriptionStatusChanged) {
+            if ($data['status'] === 'active') {
+                $account->assignRole($planName);
+            } else {
+                $account->removeRole($planName);
+            }
         }
 
-        // Check if user has changed they plan on Stripe Customer Portal
-        $currentPlanName = $account->getCurrentPlan();
-        if ($planName !== $currentPlanName) {
-            $account->removeRole($currentPlanName);
-            $account->assignRole($planName);
-            return;
+        $userChangedHisPlan = array_key_exists('plan', $payload['data']['previous_attributes']);
+        if ($userChangedHisPlan) {
+            $account
+                ->removeRole($account->getCurrentPlan())
+                ->assignRole($planName);
         }
     }
 
-    public function subscriptionCanceled($payload)
+    public function subscriptionCanceled($data)
     {
         /** @var \App\Models\Account */
-        $account = Cashier::findBillable($payload['customer']);
-        $planName = getPlanNameFromProductId($payload['plan']['product']);
+        $account = Cashier::findBillable($data['customer']);
+        $planName = getPlanNameFromProductId($data['plan']['product']);
 
         $account->removeRole($planName);
+    }
+
+    public function productUpdatedOnStripe($data)
+    {
+        Cache::forget('plans-from-stripe');
     }
 }
 
