@@ -2,18 +2,13 @@
 
 @section('content')
     <header class="mt-12 mb-14 py-3 text-center">
-        {{-- @elseif(!Auth::user()->subscribed()) --}}
-        @auth
-            <h1 class="mb-7 text-4xl font-bold">Bem-vindo(a) de volta!</h1>
-            <a href="{{-- {{ route('dashboard') }} --}}" class="rounded-md bg-blue-500 px-4 py-2 text-white">Ir para o painel de
-                controle</a>
-        @else
+        @if (!Auth::check())
             <h1 class="mb-4 text-4xl font-bold">Obtenha acesso ao conteúdo</h1>
-            <p class="text-base text-neutral-800">Pronto para assinar? Informe seu email para criar ou reiniciar sua assinatura.
+            <p class="text-base text-neutral-800">Pronto para assinar? Informe seu email para criar ou reiniciar sua
+                assinatura.
             </p>
 
-            {{-- O controller não tá recebendo a chamada --}}
-            <form action="{{ route('login') }}" method="POST" class="mt-5">
+            <form action="{{ route('login.post') }}" method="POST" class="mt-5">
                 @csrf
                 <div class="flex justify-center">
                     <input type="email" name="email" required placeholder="Email..." autocomplete="on" autocapitalize="off"
@@ -30,7 +25,14 @@
                     {{ $errors->any() ? $errors->first() : 'Digite um email aleatório para fazer login.' }}
                 </p>
             </form>
-        @endauth
+        @elseif(!Auth::user()->subscribed())
+            <h1 class="mb-7 text-4xl font-bold">Bem-vindo(a) de volta!</h1>
+            <a href="{{ route('prices') }}" class="rounded-md bg-blue-500 px-4 py-2 text-white">Finalize sua assinatura</a>
+        @else
+            <h1 class="mb-7 text-4xl font-bold">Bem-vindo(a) de volta!</h1>
+            <a href="{{-- {{ route('dashboard') }} --}}" class="rounded-md bg-blue-500 px-4 py-2 text-white">Ir para o painel de
+                controle</a>
+        @endif
     </header>
 
     <section class="mx-auto flex w-3/4 justify-center justify-evenly gap-5">

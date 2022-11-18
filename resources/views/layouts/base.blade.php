@@ -14,6 +14,7 @@
         @endif{{ config('app.name') }}
     </title>
 
+    <script src="https://unpkg.com/alpinejs" defer></script>
     @vite(['resources/js/app.js', 'resources/css/app.css'])
 
     @stack('extra_head')

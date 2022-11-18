@@ -7,9 +7,9 @@
         @include('layouts.partials.header')
     @endif
 
-    {{-- @include('layouts.partials.flash-messages') --}}
+    @include('layouts.partials.flash-messages')
 
-    <main class="mx-auto max-w-7xl px-4 pb-5">
+    <main class="mx-auto max-w-5xl px-4 py-5">
         @yield('content')
     </main>
 @endsection
