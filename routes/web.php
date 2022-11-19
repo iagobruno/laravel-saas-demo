@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing')->name('landing');
 
-Route::get('/precos', [PricingPageController::class, 'show'])->name('prices');
+Route::get('/planos', [PricingPageController::class, 'show'])->name('prices');
 Route::post('/checkout', [PricingPageController::class, 'redirectToCheckout'])->middleware('auth')->name('checkout');
 Route::get('/billing', function () {
     return request()->user()->redirectToBillingPortal(route('landing'));

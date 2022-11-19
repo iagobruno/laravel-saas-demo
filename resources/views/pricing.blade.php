@@ -14,16 +14,16 @@
 
         <div x-data="{ selected: {{ $showMonthlyPlansByDefault ? 'false' : 'true' }} }" x-cloak>
 
-            <label class="toggle mx-auto mb-6 flex w-fit items-center justify-center gap-3">
-                <span class="text-sm font-medium text-gray-900">Mensal</span>
-                <div class="relative inline-flex cursor-pointer items-center">
-                    <input type="checkbox" value="" class="peer sr-only" x-model="selected">
-                    <div
-                        class="peer h-5 w-9 rounded-full bg-blue-600 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300">
-                    </div>
-                </div>
-                <span class="text-sm font-medium text-gray-900">Anual</span>
-            </label>
+            <div class="toggle mx-auto mb-6 flex w-fit items-center rounded-full bg-neutral-300/70 p-1">
+                <div class="cursor-pointer rounded-full px-4 py-1 text-[0.92rem] font-semibold"
+                    x-bind:class="{ 'bg-white/90': !selected }"
+                    x-on:click="selected = false">
+                    Mensal</div>
+                <div class="cursor-pointer rounded-full px-4 py-1 text-[0.92rem] font-semibold"
+                    x-bind:class="{ 'bg-white/90': selected }"
+                    x-on:click="selected = true">
+                    Anual</div>
+            </div>
 
             <div class="flex items-start justify-center gap-5">
                 @foreach ($plans as $plan)
@@ -34,7 +34,7 @@
                         @if ($highlightPlan === $plan->name)
                             <div
                                 class="badge absolute top-0 mb-0.5 -translate-y-1/2 rounded-md bg-sky-600 py-0.5 px-2 text-[11px] text-white">
-                                Recomendado</div>
+                                Mais popular</div>
                         @endif
                         <div class="name block text-lg font-semibold">{{ $plan->name }}</div>
                         <p class="desc min-h-[40px] text-sm text-neutral-600">{{ $plan->description }}</p>
@@ -65,7 +65,7 @@
                                     <input type="hidden" name="recurring-interval"
                                         value="{{ $price->recurring->interval }}">
                                     <button type="submit"
-                                        class="mt-3.5 w-full rounded-md bg-sky-600 py-1 px-3 text-lg text-white">Assinar</button>
+                                        class="mt-3.5 w-full rounded-md bg-sky-600 py-1 px-3 text-lg text-white shadow-none transition duration-700 hover:bg-sky-600/90 hover:shadow-lg hover:shadow-sky-200">Assinar</button>
                                 </form>
                             </div>
                         @endforeach
