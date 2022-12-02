@@ -6,89 +6,105 @@
 
 @section('content')
     <div class="mx-auto max-w-2xl">
-        <h1 class="mb-6 text-3xl font-bold">Dashboard</h1>
+        <h1 class="mb-6 text-3xl font-bold">Visão geral da conta</h1>
 
         <section class="mb-6">
             <strong class="mb-1 block text-lg font-semibold">Dados pessoais</strong>
             <div class="grid w-fit grid-cols-2 gap-x-2 gap-y-1">
                 <span>Email:</span>
-                <span>{{ auth()->user()->email }}</span>
+                <span>{{ $account->email }}</span>
                 <span>Conta criada em:</span>
-                <span>{{ auth()->user()->created_at->format('d/m/Y') }}</span>
+                <span>{{ $account->created_at->format('d/m/Y') }}</span>
             </div>
+
+            <x-button href="#" class="mt-2.5 border border-gray-500 !bg-transparent text-sm !text-gray-900">Editar dados
+            </x-button>
         </section>
 
         <section class="mb-6">
             <strong class="mb-1.5 block text-lg font-semibold">Seu plano</strong>
-            <div
-                class="card flex flex-col items-start justify-between gap-1.5 rounded-md border border-gray-300 p-2.5 px-3.5 sm:flex-row sm:items-center">
-                <div>
-                    @if ($subscription->canceled())
-                        <span class="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold text-gray-900">Cancelado</span>
-                    @endif
-                    <div class="text-lg font-bold">{{ $plan->product->name }}</div>
-                    <div class="mb-1">
-                        @money($plan->amount, $plan->currency)
-                        {{ $plan->interval === 'year' ? 'por ano' : 'por mês' }}
-                    </div>
-                    <div class="text-xs">
-                        @if ($upcomingInvoice)
-                            Sua próxima cobrança será no dia
-                            {{ $upcomingInvoice->date()->format('d/m/Y') }},
-                            no valor de @money($upcomingInvoice->total, $upcomingInvoice->currency).
-                        @elseif ($subscription->onGracePeriod())
-                            Seu plano será cancelado ao fim do período de faturamento, em
-                            {{ $subscription->ends_at->format('d/m/Y') }}.
+            @if (!$subscription)
+                <p>Você não tem nenhum plano ativo ainda.</p>
+                <x-button :href="route('prices')" class="!mt-2 text-sm">Assinar um plano</x-button>
+            @else
+                <div
+                    class="card flex flex-col items-start justify-between gap-1.5 rounded-md border border-gray-300 p-2.5 px-3.5 sm:flex-row sm:items-center">
+                    <div>
+                        @if ($subscription->canceled())
+                            <span
+                                class="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold text-gray-900">Cancelado</span>
                         @endif
+                        <div class="text-lg font-bold">{{ $plan->product->name }}</div>
+                        <div class="mb-1">
+                            @money($plan->amount, $plan->currency)
+                            {{ $plan->interval === 'year' ? 'por ano' : 'por mês' }}
+                        </div>
+                        <div class="text-xs">
+                            @if ($subscription->valid() && $upcomingInvoice)
+                                Sua próxima cobrança será no dia
+                                {{ $upcomingInvoice->date()->format('d/m/Y') }},
+                                no valor de @money($upcomingInvoice->total, $upcomingInvoice->currency).
+                            @elseif ($subscription->ended())
+                                Seu plano foi cancelado em {{ $subscription->ends_at->format('d/m/Y') }}.
+                            @elseif ($subscription->onGracePeriod())
+                                Seu plano será cancelado ao fim do período de faturamento, em
+                                {{ $subscription->ends_at->format('d/m/Y') }}.
+                            @else
+                            @endif
+                        </div>
                     </div>
+                    <form action="{{ route('billing') }}" method="POST">
+                        @csrf
+                        <x-button type="submit" class="text-sm">
+                            {{ $subscription->active() ? 'Gerenciar assinatura' : 'Retomar assinatura' }}
+                        </x-button>
+                    </form>
                 </div>
-                <form action="{{ route('billing') }}" method="POST">
-                    @csrf
-                    <x-button type="submit" class="text-sm">
-                        {{ $subscription->onGracePeriod() ? 'Retomar assinatura' : 'Gerenciar assinatura' }}
-                    </x-button>
-                </form>
-            </div>
+            @endif
         </section>
 
         <section class="mb-6">
             <strong class="mb-1.5 block text-lg font-semibold">Recibos</strong>
-            <table class="m-0 w-full">
-                <thead class="border-b border-b-2 border-gray-300/80">
-                    <tr>
-                        <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Data</th>
-                        <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Preço</th>
-                        <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Status</th>
-                        <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Código de identificação</th>
-                        <th class="pb-1.5 text-left text-sm font-semibold text-gray-600"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($invoices as $invoice)
-                        <tr class="border-b-300 border-b">
-                            <td class="py-2 text-sm font-semibold">
-                                {{ $invoice->date()->format('d/m/Y') }}</td>
-                            <td class="py-2 text-sm">@money($invoice->total, $invoice->currency)</td>
-                            <td class="py-2 text-sm">
-                                <div @class([
-                                    'inline-block rounded px-1 text-xs py-[0.1rem]',
-                                    'bg-green-200 text-green-800' => $invoice->paid,
-                                    'bg-red-200 text-red-800' => !$invoice->paid,
-                                ])>
-                                    {{ $invoice->paid ? 'Paga' : 'Com problema' }}
-                                </div>
-                            </td>
-                            <td class="py-2 text-xs text-gray-700/90">{{ $invoice->id }}</td>
-                            <td class="py-2 text-[0.95rem]">
-                                <a href="{{ $invoice->hosted_invoice_url }}" class="text-sm text-gray-600/90 underline"
-                                    target="_blank"
-                                    rel="noopener noreferrer">Ver
-                                    detalhes ↗</a>
-                            </td>
+            @if ($invoices && count($invoices) > 0)
+                <table class="m-0 w-full">
+                    <thead class="border-b border-b-2 border-gray-300/80">
+                        <tr>
+                            <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Data</th>
+                            <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Preço</th>
+                            <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Status</th>
+                            <th class="pb-1.5 text-left text-sm font-semibold text-gray-600">Código de identificação</th>
+                            <th class="pb-1.5 text-left text-sm font-semibold text-gray-600"></th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($invoices as $invoice)
+                            <tr class="border-b-300 border-b">
+                                <td class="py-2 text-sm font-semibold">
+                                    {{ $invoice->date()->format('d/m/Y') }}</td>
+                                <td class="py-2 text-sm">@money($invoice->total, $invoice->currency)</td>
+                                <td class="py-2 text-sm">
+                                    <div @class([
+                                        'inline-block rounded px-1 text-xs py-[0.1rem]',
+                                        'bg-green-200 text-green-800' => $invoice->paid,
+                                        'bg-red-200 text-red-800' => !$invoice->paid,
+                                    ])>
+                                        {{ $invoice->paid ? 'Paga' : 'Com problema' }}
+                                    </div>
+                                </td>
+                                <td class="py-2 text-xs text-gray-700/90">{{ $invoice->id }}</td>
+                                <td class="py-2 text-[0.95rem]">
+                                    <a href="{{ $invoice->hosted_invoice_url }}" class="text-sm text-gray-600/90 underline"
+                                        target="_blank"
+                                        rel="noopener noreferrer">Ver
+                                        detalhes ↗</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @else
+                <div class="text-sm text-gray-600">Sem histórico de faturas.</div>
+            @endif
         </section>
 
         <section class="mb-6">
@@ -98,7 +114,8 @@
 
             <form action="#" method="POST">
                 @csrf
-                <x-button type="submit" class="border border-gray-500 !bg-transparent text-sm !text-gray-900">Desconectar
+                <x-button type="submit" class="mt-3 border border-gray-500 !bg-transparent text-sm !text-gray-900">
+                    Desconectar
                     outros dispositivos</x-button>
             </form>
         </section>

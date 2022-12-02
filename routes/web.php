@@ -24,7 +24,7 @@ Route::post('/checkout', [PricingPageController::class, 'redirectToCheckout'])->
 /**
  * Dashboard
  */
-Route::controller(DashboardController::class)->middleware(['auth', 'subscribers'])->group(function () {
+Route::controller(DashboardController::class)->middleware(['auth'])->group(function () {
     Route::get('/conta', 'show')->name('dashboard');
     Route::post('/billing', 'redirectToBillingPortal')->name('billing');
 });

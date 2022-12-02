@@ -13,14 +13,15 @@ class DashboardController extends Controller
         $account = auth()->user();
 
         $subscription = $account->subscription('default');
-        $plan = $subscription->asStripeSubscription(expand: ['plan.product'])->plan;
-        $upcomingInvoice = $subscription->upcomingInvoice();
+        $plan = $subscription?->asStripeSubscription(expand: ['plan.product'])->plan;
+        $upcomingInvoice = $subscription?->upcomingInvoice();
         $invoices = $account->invoices(parameters: ['expand' => ['data.subscription.plan.product']]);
 
         // dd($subscription);
         // dd($paymentMethod = $account->paymentMethods());
 
         return view('dashboard', compact(
+            'account',
             'subscription',
             'plan',
             'upcomingInvoice',

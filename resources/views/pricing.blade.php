@@ -65,7 +65,7 @@
                                     <input type="hidden" name="recurring-interval"
                                         value="{{ $price->recurring->interval }}">
                                     <x-button type="submit"
-                                        class="w-full text-lg shadow-none transition duration-700 hover:shadow-lg hover:shadow-sky-200">
+                                        class="mt-3 w-full text-lg shadow-none transition duration-700 hover:shadow-lg hover:shadow-sky-200">
                                         Assinar</x-button>
                                 </form>
                             </div>
