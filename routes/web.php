@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PricingPageController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,14 @@ Route::view('/', 'landing')->name('landing');
 
 Route::get('/planos', [PricingPageController::class, 'show'])->name('prices');
 Route::post('/checkout', [PricingPageController::class, 'redirectToCheckout'])->middleware('auth')->name('checkout');
-Route::get('/billing', function () {
-    return request()->user()->redirectToBillingPortal(route('landing'));
-})->middleware(['auth', 'subscribers'])->name('billing');
+
+/**
+ * Dashboard
+ */
+Route::controller(DashboardController::class)->middleware(['auth', 'subscribers'])->group(function () {
+    Route::get('/conta', 'show')->name('dashboard');
+    Route::post('/billing', 'redirectToBillingPortal')->name('billing');
+});
 
 /**
  * Auth routes

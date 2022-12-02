@@ -3,15 +3,16 @@
         <a href="{{ route('landing') }}" class="text-lg font-bold text-blue-500">{{ config('app.name') }}</a>
 
         <div class="flex flex-1 items-center gap-3 text-sm">
-            <a href="{{ route('prices') }}">Planos e preços</a>
+            <a href="{{ route('prices') }}" class="hover:underline">Planos e preços</a>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 text-sm">
             @auth
+                <a href="{{ route('dashboard') }}" class="text-blue-500 hover:underline">Minha conta</a>
                 {{ Auth::user()->email }}
                 <form action="{{ route('logout') }}" method="post">
                     @csrf
-                    <button type="submit" class="rounded bg-neutral-500/80 px-2 py-0.5 text-sm text-white">Sair</button>
+                    <button type="submit" class="rounded bg-neutral-500/80 px-1.5 py-0.5 text-xs text-white">Sair</button>
                 </form>
             @else
                 @if (!Route::is('landing'))

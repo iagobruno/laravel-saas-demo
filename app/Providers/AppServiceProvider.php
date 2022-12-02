@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Account;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 use Laravel\Cashier\Cashier;
 use Stripe\Stripe;
 

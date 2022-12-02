@@ -42,7 +42,7 @@
                         @foreach ($plan->prices as $price)
                             <div x-show="{{ $price->recurring->interval === 'month' ? '!selected' : 'selected' }}">
                                 <div class="price mt-2.5 mb-0.5 flex items-center gap-2">
-                                    <div class="text-3xl font-bold">@money($price->unit_amount)</div>
+                                    <div class="text-3xl font-bold">@money($price->unit_amount, $price->currency)</div>
                                     <span class="w-0 text-sm leading-4 text-neutral-600">
                                         {{ $price->recurring->interval === 'month' ? 'por mês' : 'por ano' }}</span>
                                 </div>
@@ -53,8 +53,8 @@
                                         $annualPrice = $plan->prices[1]->unit_amount;
                                         $diffPercentageBetweenPrices = round((($monthlyPrice - $annualPrice) / $monthlyPrice) * 100);
                                     @endphp
-                                    <div class="mr-auto w-fit text-sm text-green-600">Economize
-                                        {{ $diffPercentageBetweenPrices }}%!
+                                    <div class="mr-auto w-fit text-sm text-green-600">
+                                        Economize {{ $diffPercentageBetweenPrices }}%!
                                     </div>
                                 @endif
 
@@ -64,8 +64,9 @@
                                     <input type="hidden" name="plan" value="{{ $plan->name }}">
                                     <input type="hidden" name="recurring-interval"
                                         value="{{ $price->recurring->interval }}">
-                                    <button type="submit"
-                                        class="mt-3.5 w-full rounded-md bg-sky-600 py-1 px-3 text-lg text-white shadow-none transition duration-700 hover:bg-sky-600/90 hover:shadow-lg hover:shadow-sky-200">Assinar</button>
+                                    <x-button type="submit"
+                                        class="text-lg shadow-none transition duration-700 hover:shadow-lg hover:shadow-sky-200">
+                                        Assinar</x-button>
                                 </form>
                             </div>
                         @endforeach

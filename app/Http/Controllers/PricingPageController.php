@@ -71,7 +71,6 @@ class PricingPageController extends Controller
             'plan' => ['required', 'string'],
         ]);
         $priceId = $request->input('price-id');
-
         /** @var \App\Models\Account */
         $account = Auth::user();
 
@@ -87,7 +86,7 @@ class PricingPageController extends Controller
             ->allowPromotionCodes()
             ->checkout([
                 'payment_method_types' => ['card'],
-                'success_url' => route('landing', ['subscribed' => true]), /* route('dashboard') */
+                'success_url' => route('dashboard', ['subscribed' => true]),
                 'cancel_url' => route('prices'),
                 'customer_update' => [
                     'name' => 'auto'
