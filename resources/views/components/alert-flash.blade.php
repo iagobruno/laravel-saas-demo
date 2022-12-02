@@ -13,7 +13,7 @@
                 <svg class="bi me-2 flex-shrink" width="20" height="20" role="img" aria-label="Success:">
                     <use xlink:href="#check-circle-fill"></use>
                 </svg>
-            @elseif ($type === 'danger')
+            @elseif ($type === 'error')
                 <svg class="bi me-2 flex-shrink" width="20" height="20" role="img" aria-label="Danger:">
                     <use xlink:href="#exclamation-triangle-fill" />
                 </svg>
@@ -28,7 +28,7 @@
             @endif
         @endif
 
-        <div class="flex-grow">{{ $message }}</div>
+        <div class="flex-grow text-sm">{{ $message }}</div>
 
         @if ($dismissible)
             <button type="button" class="-my-0.5 p-1.5 leading-[14px]" aria-label="Fechar"

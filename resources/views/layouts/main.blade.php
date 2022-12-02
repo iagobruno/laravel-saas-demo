@@ -1,7 +1,7 @@
 @extends('layouts.base')
 
 @section('body')
-    {{-- @include('layouts.partials.top-banner') --}}
+    @include('layouts.partials.top-banner')
 
     @if ($show_header ?? true)
         @include('layouts.partials.header')
