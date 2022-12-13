@@ -1,5 +1,10 @@
 # laravel-saas-demo
 
+|  |  |
+| ------------- | ------------- |
+| Página inicial: ![landing.png](./public/images/landing.png)  | Página de planos: ![pricing.png](./public/images/pricing.png)  |
+| Checkout: ![checkout.png](./public/images/checkout.png) | Visão geral da conta: ![account.png](./public/images/account.png)  |
+
 ## Getting started
 
 Clone this repo and run commands in the order below:
